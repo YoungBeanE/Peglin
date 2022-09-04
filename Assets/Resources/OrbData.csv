@@ -1,0 +1,5 @@
+Level,Name,Damage,CriDamage,HealPower,AttackPower,Info
+1,맞으라구,2,4,0,1,특별한 효과가 없습니다
+2,날카롭구,1,8,0,1,일반 Peg에는 약하지만 Critical Peg 데미지가 강합니다
+3,살아나라구,1,2,3,0,공격기능은 없지만 페글린의 체력을 회복시킬 수 있습니다
+4,죽으라구,1,1,0,5,Bomb Peg를 터뜨리면 몬스터에게 폭탄공격을 할 수 있습니다
