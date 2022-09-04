@@ -88,5 +88,8 @@ public class OrbPool : MonoBehaviour
 	{
 		orb.gameObject.SetActive(false);
 	}
+	public void GetBomb()
+    {
 
+    }
 }

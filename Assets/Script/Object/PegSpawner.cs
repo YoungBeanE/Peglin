@@ -3,13 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
 
-[System.Serializable]
-public class PegInfo
-{
-	public int MobLevel = 1;
-	public int Count = 3;
-}
-
 public class PegSpawner : MonoBehaviour
 {
 	#region Pool
@@ -59,7 +52,6 @@ public class PegSpawner : MonoBehaviour
 	[SerializeField] float height = 1f; // Z 축 기준으로 크기
 
 	//Peg
-	[SerializeField] PegInfo[] PegInfos = null;
 	[SerializeField] ResourceDataObj ResDataObj = null; // 리소스 데이터
 	[SerializeField] Peg[] prefabpeg = null;
 	
@@ -74,33 +66,37 @@ public class PegSpawner : MonoBehaviour
 		}
 
 	}
-	public void Start()
-	{
-		StartCoroutine("setPeg");
 
+    private void OnEnable()
+    {
+		StartCoroutine("setPeg");
 	}
-	
-	
-	IEnumerator setPeg()
+    IEnumerator setPeg()
 	{
-		for(int i = 0; i < Random.Range(20, 50); i++)
+		yield return new WaitUntil(() => pegReflesh);
+
+		for (int i = 0; i < Random.Range(20, 50); i++)
         {
 			Peg instpeg = Pool.Get();
 			instpeg.transform.position = RandomPos();
 			instpeg.transform.rotation = Quaternion.identity;
 			instpeg.callbackDestroy = PegDestroy;
+			instpeg.callbackReflesh = PegReflesh;
+			pegReflesh = false;
 		}
-		
-
-		yield return null;
 	}
+	bool pegReflesh;
+	void PegReflesh()
+    {
+		pegReflesh = true;
 
+	}
 	void PegDestroy(Peg peg)
 	{
 		Pool.Release(peg);
 
 	}
-	Vector2 RandomPos()
+	Vector2 RandomPos() //이부분 동작은 하는데 나중에 고쳐야됨
 	{
 		Vector2 size = transform.lossyScale;
 		size.x *= width;

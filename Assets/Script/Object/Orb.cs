@@ -90,8 +90,8 @@ public class Orb : MonoBehaviour
         */
         line.enabled = true;
     }
-    Plane orbPlane = new Plane();
-    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+    //Plane orbPlane = new Plane();
+    //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
     private void OnCollisionEnter2D(Collision2D peg)
     {
         
