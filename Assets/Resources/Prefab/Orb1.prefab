@@ -118,7 +118,7 @@ CircleCollider2D:
   m_GameObject: {fileID: 476335804564290877}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 2879c962887bf664384e78f30511f77b, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -188,8 +188,8 @@ LineRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0.08203888
-        value: 0.043689728
+        time: 0.04014206
+        value: 0.037403107
         inSlope: 0
         outSlope: 0
         tangentMode: 0

@@ -8,11 +8,27 @@ public class Peg : MonoBehaviour
 {
     public CallbackDestroy callbackDestroy = null;
     public CallbackReflesh callbackReflesh = null;
-    int collisioncount = 0;
-    void start()
-    {
+    
+    SpriteRenderer spriteRenderer = null;
+    Player player = null;
 
+    int collisioncount = 0;
+    private void Awake()
+    {
+        if (transform.tag == "BomPeg")
+        {
+            spriteRenderer = GetComponent<SpriteRenderer>();
+            player = FindObjectOfType<Player>();
+        }
     }
+    private void OnEnable()
+    {
+        if (transform.tag == "BomPeg")
+        {
+            spriteRenderer.sprite = Resources.Load<Sprite>("Hit bomb 3");
+        }
+    }
+    
     private void OnCollisionEnter2D(Collision2D collision)
     {
         switch (transform.tag)
@@ -24,9 +40,10 @@ public class Peg : MonoBehaviour
                 break;
             case "BomPeg":
                 collisioncount++;
-                if (collisioncount >= 2)
+                spriteRenderer.sprite = Resources.Load<Sprite>("Hit bomb 0");
+                if (collisioncount >= 2) //폭탄은 두번 충돌하면 사라짐.
                 {
-                    OrbPool.Inst.GetBomb(); //플레이어한테
+                    player.GetBomb(); //플레이어한테
                     if (callbackDestroy != null)
                         callbackDestroy(this);
                 }
@@ -40,4 +57,5 @@ public class Peg : MonoBehaviour
         }
         
     }
+    
 }

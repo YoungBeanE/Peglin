@@ -5,8 +5,6 @@ using UnityEngine.UI;
 
 public class DamageTextMgr : MonoBehaviour
 {
-	//----------------------------------------------------------------------
-	// ΩÃ±€≈œ ∞¥√º∑Œ ∏∏µÈ¿⁄.
 	static DamageTextMgr instance;
 	public static DamageTextMgr Inst
 	{

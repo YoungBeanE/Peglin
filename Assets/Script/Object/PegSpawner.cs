@@ -54,7 +54,8 @@ public class PegSpawner : MonoBehaviour
 	//Peg
 	[SerializeField] ResourceDataObj ResDataObj = null; // 리소스 데이터
 	[SerializeField] Peg[] prefabpeg = null;
-	
+	int ReleasePeg = 0;
+
 	private void Awake()
 	{
 		ResDataObj = Resources.Load<ResourceDataObj>("MyResourceDataObj");
@@ -73,8 +74,6 @@ public class PegSpawner : MonoBehaviour
 	}
     IEnumerator setPeg()
 	{
-		yield return new WaitUntil(() => pegReflesh);
-
 		for (int i = 0; i < Random.Range(20, 50); i++)
         {
 			Peg instpeg = Pool.Get();
@@ -82,18 +81,24 @@ public class PegSpawner : MonoBehaviour
 			instpeg.transform.rotation = Quaternion.identity;
 			instpeg.callbackDestroy = PegDestroy;
 			instpeg.callbackReflesh = PegReflesh;
-			pegReflesh = false;
+		}
+		yield return null;
+	}
+	
+	void PegReflesh() //재생성
+	{
+		//StartCoroutine("setPeg");
+		
+		for (int i = 0; i < ReleasePeg; i++)
+		{
+			Peg instpeg = Pool.Get();
+			ReleasePeg = 0;
 		}
 	}
-	bool pegReflesh;
-	void PegReflesh()
-    {
-		pegReflesh = true;
-
-	}
-	void PegDestroy(Peg peg)
+	void PegDestroy(Peg peg) //비활성화
 	{
 		Pool.Release(peg);
+		ReleasePeg++;
 
 	}
 	Vector2 RandomPos() //이부분 동작은 하는데 나중에 고쳐야됨

@@ -54,7 +54,7 @@ public class GameDataMgr
 	List<OrbData> listOrbData = new List<OrbData>();
 
 	// 게임데이터 로드
-	public void LoadGameData() //플레이어 스타트에서 호출
+	public void LoadGameData() //플레이어 awake에서 호출
 	{
 		loadPlayerData();
 		//loadMonsterData();
@@ -67,7 +67,7 @@ public class GameDataMgr
 		TextAsset ta = Resources.Load<TextAsset>("OrbData");
 
 		string[] lines = ta.text.Split("\r\n");
-		for (int i = 1; i < lines.Length - 1; ++i)
+		for (int i = 1; i < lines.Length-1; ++i)
 		{
 			// 데이터 1줄을 컴마로 구분한다.
 			string[] columes = lines[i].Split(',');
@@ -80,7 +80,6 @@ public class GameDataMgr
 			orbData.HealPower = int.Parse(columes[4]);  // 힐
 			orbData.AttackPower = int.Parse(columes[5]);  // 공격
 			orbData.Info = columes[6];  // orb정보
-
 			listOrbData.Add(orbData);
 		}
 
@@ -103,7 +102,6 @@ public class GameDataMgr
 			playerData.Exp = int.Parse(columes[1]);     // 경험치 누적값
 			playerData.AttackPower = int.Parse(columes[2]);  // 공격력
 			playerData.MaxHP = int.Parse(columes[3]);  // max hp
-
 			listPlayerData.Add(playerData);
 		}
 	}
@@ -147,7 +145,7 @@ public class GameDataMgr
 
 	public OrbData FindOrbDataBy(int level)
 	{
-		OrbData orbData = listOrbData.Find(oData => oData.Level == level);
+		OrbData orbData = listOrbData.Find(orbData => orbData.Level == level);
 		return orbData;
 	}
 

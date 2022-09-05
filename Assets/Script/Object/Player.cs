@@ -24,11 +24,17 @@ public class Player : MonoBehaviour
 	Animator myAnimator = null;
     AnimationEventReceiver myEventReceiver = null;
 
-	Orb curorb = null;
-    private void Awake()
+	Orb bomborb = null;
+	int bombnum = 0;
+
+	private void Awake()
 	{
+		GameDataMgr.Inst.LoadGameData();
+		ResDataObj = Resources.Load<ResourceDataObj>("MyResourceDataObj");
+		bomborb = ResDataObj.orb[3];
+
 		//transCam  = FindObjectOfType<Camera>().transform;
-        myAnimator = GetComponent<Animator>();
+		myAnimator = GetComponent<Animator>();
         myEventReceiver = GetComponent<AnimationEventReceiver>();
         //myEventReceiver.callbackAttackEvent = OnAttackEvent;
         //myEventReceiver.callbackAnimEndEvent = OnAnimEndEvent;
@@ -37,7 +43,6 @@ public class Player : MonoBehaviour
 	private void Start()
 	{
         curHP = maxHP; // 플레이어가 생성되면 HP 를 갱신
-		GameDataMgr.Inst.LoadGameData();
 		nextState(STATE.IDLE);
 	}
 
@@ -179,7 +184,11 @@ public class Player : MonoBehaviour
 
 	}
 	
-
+	public void GetBomb()
+    {
+		bombnum++;
+		Debug.Log(bombnum);
+	}
     // 공격이벤트가 발생하는 시점에 호출
     void OnAttackEvent()
 	{

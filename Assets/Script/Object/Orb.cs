@@ -21,27 +21,33 @@ public class Orb : MonoBehaviour
         healPower = orb.HealPower;
         attackPower = orb.AttackPower;
         info = orb.Info;
+        Debug.Log($"{level}, {nam}, {damage}, {criDamage}, {healPower}, {attackPower}, {info}");
     }
 
+    Player player;
 
-    Rigidbody2D Rigidbody;
+    Rigidbody2D rigidbody;
     LineRenderer line;
+    CircleCollider2D CircleCollider;
     RaycastHit2D hit;
-    Vector2 hitPos;
+    Vector3 MousePosition;
+    Vector3 hitPos;
     Vector3 dir;
 
-    int layerMaskPeg;
+    //int layerMaskPeg;
 
     // Start is called before the first frame update
     void Awake()
     {
-        Rigidbody = GetComponent<Rigidbody2D>();
+        player = FindObjectOfType<Player>();
+        rigidbody = GetComponent<Rigidbody2D>();
         line = GetComponent<LineRenderer>();
-        Rigidbody.gravityScale = 0f;
-
-        layerMaskPeg = 1 << 10;
+        CircleCollider = GetComponent<CircleCollider2D>();
+        rigidbody.gravityScale = 0f;
+        CircleCollider.enabled = false;
+        //layerMaskPeg = 1 << 10;
     }
-    void Start()
+    void onEnable()
     {
         
     }
@@ -52,50 +58,76 @@ public class Orb : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             line.enabled = false;
-            Rigidbody.gravityScale = 0.5f;
-            Rigidbody.AddForceAtPosition(dir, hitPos);
-           
+            CircleCollider.enabled = true;
+            rigidbody.AddForceAtPosition(dir * 100f, hitPos);
+            
         }
     }
     
     private void DrawLine()
     {
+        line.enabled = true;
         line.SetPosition(0, this.transform.position); //Line Renderer의 포지션 인덱스 0은 Orb
         
-        Vector3 mousepos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mousepos.z = 0f;
-        line.SetPosition(1, mousepos);
-        /*
-        //float d = Vector3.Distance(mouse, this.transform.position);
-        dir = new Vector3(mouse.x - transform.position.x, mouse.y - transform.position.y, 0f);
-        //Physics.Raycast(this.transform.position, dir);
+        MousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        MousePosition.z = 0f;
+        dir = (MousePosition-this.transform.position).normalized;
 
-        hit = Physics2D.Raycast(this.transform.position, dir.normalized, Mathf.Infinity, layerMaskPeg);
         
-
-        //
-        if (hit.collider != null)
+        hit = Physics2D.Raycast(this.transform.position, dir, 2.5f);
+        if (hit)
         {
-            //Vector3 aa = hit.point;
-            
-            line.SetPosition(1,hit.point);
-            Debug.Log(hit.point);
-            Debug.DrawRay(transform.position, dir, Color.green);
+            hitPos = hit.point;
+            line.SetPosition(1, hitPos);
         }
         else
         {
-            //line.SetPosition(1, mouse);
-            Debug.Log("hi");
+            if(Vector3.Distance(MousePosition, this.transform.position) >= 2.5f)
+            {
+                hitPos = dir * 2f;
+                line.SetPosition(1, hitPos);
+            }
+            else
+            {
+                hitPos = MousePosition;
+                line.SetPosition(1, hitPos);
+            }
+            
         }
-        */
-        line.enabled = true;
-    }
-    //Plane orbPlane = new Plane();
-    //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-    private void OnCollisionEnter2D(Collision2D peg)
-    {
         
     }
+    private void OnCollisionEnter2D(Collision2D peg)
+    {
+        rigidbody.gravityScale = 0.2f;
+        switch (peg.transform.tag)
+        {
+            case "OriPeg":
+                attackPower += damage;
+                break;
+            case "CriPeg":
+                attackPower *= criDamage;
+                break;
+            case "BomPeg":
+                attackPower += damage;
+                break;
+            case "RefPeg":
+                attackPower += damage;
+                break;
+        }
+        
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.transform.tag == "Attack")
+        {
 
-    //Vector2 targetPoint = hit.point; // 끝점을 hit포인트로.
+            rigidbody.gravityScale = 0f;
+            CircleCollider.enabled = false;
+            OrbPool.Inst.DestroyOrb(this);
+            player.AttackPower = attackPower;
+            Debug.Log(attackPower);
+            OrbPool.Inst.SetOrb();
+        }
+    }
+
 }

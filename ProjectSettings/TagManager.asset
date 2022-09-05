@@ -12,6 +12,7 @@ TagManager:
   - Orb2
   - Orb3
   - Orb4
+  - Attack
   layers:
   - Default
   - TransparentFX

@@ -7,7 +7,6 @@ public class UIManager : MonoBehaviour
 {
     #region ╫л╠шео
     static UIManager inst = null;
-    private UIManager() { }
     public static UIManager Inst
     {
         get

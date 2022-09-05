@@ -56,7 +56,9 @@ public class OrbPool : MonoBehaviour
 	}
     IEnumerator ShootOrb()
 	{
+		Orbpool[shootOrb].transform.position = Orbpos;
 		Orbpool[shootOrb].gameObject.SetActive(true);
+		
 		shootOrb++;
 		if(shootOrb >= ResDataObj.PlayerOrb)
         {
@@ -88,8 +90,5 @@ public class OrbPool : MonoBehaviour
 	{
 		orb.gameObject.SetActive(false);
 	}
-	public void GetBomb()
-    {
-
-    }
+	
 }
