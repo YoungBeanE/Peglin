@@ -19,7 +19,7 @@ public class Orb : MonoBehaviour
         damage = orb.Damage;
         criDamage = orb.CriDamage;
         healPower = orb.HealPower;
-        attackPower = orb.AttackPower;
+        attackPower = 0;
         info = orb.Info;
         Debug.Log($"{level}, {nam}, {damage}, {criDamage}, {healPower}, {attackPower}, {info}");
     }
@@ -47,10 +47,7 @@ public class Orb : MonoBehaviour
         CircleCollider.enabled = false;
         //layerMaskPeg = 1 << 10;
     }
-    void onEnable()
-    {
-        
-    }
+    
     private void Update()
     {
         DrawLine();
@@ -59,8 +56,7 @@ public class Orb : MonoBehaviour
         {
             line.enabled = false;
             CircleCollider.enabled = true;
-            rigidbody.AddForceAtPosition(dir * 100f, hitPos);
-            
+            rigidbody.AddForceAtPosition(dir * 120f, hitPos);
         }
     }
     
@@ -103,15 +99,19 @@ public class Orb : MonoBehaviour
         {
             case "OriPeg":
                 attackPower += damage;
+                DamageTextMgr.Inst.DamageText(attackPower, peg.transform.position, Vector3.up * 0.3f);
                 break;
             case "CriPeg":
-                attackPower *= criDamage;
+                attackPower += criDamage;
+                DamageTextMgr.Inst.DamageText(attackPower, peg.transform.position, Vector3.up * 0.3f);
                 break;
             case "BomPeg":
                 attackPower += damage;
+                DamageTextMgr.Inst.DamageText(attackPower, peg.transform.position, Vector3.up * 0.3f);
                 break;
             case "RefPeg":
                 attackPower += damage;
+                DamageTextMgr.Inst.DamageText(attackPower, peg.transform.position, Vector3.up * 0.3f);
                 break;
         }
         
@@ -123,9 +123,10 @@ public class Orb : MonoBehaviour
 
             rigidbody.gravityScale = 0f;
             CircleCollider.enabled = false;
-            OrbPool.Inst.DestroyOrb(this);
             player.AttackPower = attackPower;
-            Debug.Log(attackPower);
+            attackPower = 0;
+            OrbPool.Inst.DestroyOrb(this);
+
             OrbPool.Inst.SetOrb();
         }
     }

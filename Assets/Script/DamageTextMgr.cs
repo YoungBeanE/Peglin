@@ -23,33 +23,45 @@ public class DamageTextMgr : MonoBehaviour
 	}
 	//----------------------------------------------------------------------
 
+	[SerializeField] ResourceDataObj resourceDataObj = null;
+	[SerializeField] DamageText prefabDamageText = null; // 데미지텍스트 프리팹
+	Queue<DamageText> texts = new Queue<DamageText>();
 	Canvas canvas = null;
 	private void Awake()
 	{
+		resourceDataObj = Resources.Load<ResourceDataObj>("MyResourceDataObj");
+		prefabDamageText = resourceDataObj.damagetext;
 		canvas = FindObjectOfType<Canvas>();
 	}
 
-
-
-
-
-
-
-	[SerializeField] Text prefabDamageText = null; // 데미지텍스트 프리팹
-
-
-	// 데미지숫자를 출력하도록 요청을 받으면
-	// 프리팹을 참조해서 1개 객체를 생성합니다.
-	public void AddText(float damageValue, Vector3 outputPos, Vector3 offsetPos)
+	
+	public void DamageText(int damageValue, Vector2 outputPos, Vector2 offsetPos)
 	{
-		// 입력된 outputPos는 3D 공간 상의 좌표이므로
-		// 이 것을 2D UI 공간 상의 좌표로 변환이 필요하다.
-
-		// 1. 카메라 기준으로 화면 좌표계로 변경
-		Vector3 screenPos = Camera.main.WorldToScreenPoint(outputPos + offsetPos);
-
-		Text instTxt = Instantiate(prefabDamageText, screenPos, Quaternion.identity, canvas.transform);
-		instTxt.text = ((int)damageValue).ToString();
+		DamageText instTxt;
+		Vector3 textPos = Camera.main.WorldToScreenPoint(outputPos + offsetPos);
+		if (texts.Count == 0)
+        {
+			instTxt = Instantiate(prefabDamageText, textPos, Quaternion.identity, canvas.transform);
+			Debug.Log("확인" + damageValue);
+			
+			
+			instTxt.gameObject.SetActive(true);
+			instTxt.Damage = damageValue.ToString();
+			Debug.Log("과연" + damageValue);
+		}
+        else
+        {
+			instTxt = texts.Dequeue();
+			instTxt.transform.position = textPos;
+			instTxt.Damage = damageValue.ToString();
+			instTxt.gameObject.SetActive(true);
+		}
 	}
-    
+
+    public void DestroyText(DamageText text)
+    {
+		text.gameObject.SetActive(false);
+		texts.Enqueue(text);
+
+    }
 }

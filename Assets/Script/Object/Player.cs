@@ -8,7 +8,7 @@ public class Player : MonoBehaviour
 {
 	public OnChangedHP CallbackChangedHP = null;    // HP가 변경되면 호출
 
-	[Header("[이펙트 내용]")]
+	
     [SerializeField] ResourceDataObj ResDataObj = null; // 리소스 데이터
 	[SerializeField] Transform transEff = null; // 이펙트가 출력될 위치
 
@@ -22,7 +22,7 @@ public class Player : MonoBehaviour
 	//Transform transCam = null;
 	
 	Animator myAnimator = null;
-    AnimationEventReceiver myEventReceiver = null;
+    
 
 	Orb bomborb = null;
 	int bombnum = 0;
@@ -35,9 +35,6 @@ public class Player : MonoBehaviour
 
 		//transCam  = FindObjectOfType<Camera>().transform;
 		myAnimator = GetComponent<Animator>();
-        myEventReceiver = GetComponent<AnimationEventReceiver>();
-        //myEventReceiver.callbackAttackEvent = OnAttackEvent;
-        //myEventReceiver.callbackAnimEndEvent = OnAnimEndEvent;
     }
 
 	private void Start()
@@ -94,7 +91,7 @@ public class Player : MonoBehaviour
 		// 이동 애니메이션 출력
 		myAnimator.SetBool("Move", true);
 
-		transform.Translate(Vector3.forward * 5f * Time.deltaTime, Space.Self); // 플레이어 중앙이동 느리게
+		transform.Translate(Vector3.right * 5f * Time.deltaTime, Space.Self); // 플레이어 중앙이동 느리게
 
 		
 		nextState(STATE.IDLE); //중앙이동하면 다시 대기
@@ -169,7 +166,7 @@ public class Player : MonoBehaviour
 			CallbackChangedHP(curHP, maxHP);
 
 		// 데미지 텍스트 출력
-		DamageTextMgr.Inst.AddText(AttackPower, transform.position, Vector3.up * 1.5f);
+		//DamageTextMgr.Inst.AddText(AttackPower, transform.position, Vector3.up * 1.5f);
 
 		if (curHP <= 0)
 		{

@@ -112,6 +112,7 @@ public class PegSpawner : MonoBehaviour
 		Vector2 randomPos = rMat.MultiplyPoint(new Vector2(Random.Range(-0.5f, 0.5f), Random.Range(-0.5f, 0.5f)));
 		return randomPos;
 	}
+	/*
 #if UNITY_EDITOR
 	// 기즈모를 그릴 때 호출되는 함수
 	private void OnDrawGizmos()
@@ -141,4 +142,5 @@ public class PegSpawner : MonoBehaviour
 		Gizmos.DrawCube(Vector3.zero, Vector3.one);
 	}
 #endif
+	*/
 }

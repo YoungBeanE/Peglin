@@ -5,28 +5,24 @@ using UnityEngine;
 public delegate void OnChangedMonHP(int curHP, int maxHP);
 public class Monster : MonoBehaviour
 {
-	[Header("[몬스터 기본속성들]")]
-	[SerializeField] int maxHP = 100;   // 내가 가질 수 있는 최대 HP
-	[SerializeField] int attackPower; // 공격력
-	[Header("[이펙트 내용]")]
+	public OnChangedHP CallbackChangedHP = null;    // HP가 변경되면 호출
+
 	[SerializeField] ResourceDataObj ResDataObj = null; // 리소스 데이터
 	[SerializeField] Transform transEff = null; // 이펙트가 출력될 위치
 
-	int curHP = 0;  // 현재 HP
-	bool IsDeath { get { return (curHP <= 0); } } // 몬스터 사망처리
-	bool isAttackProcess = false; // 공격중
-	public OnChangedHP CallbackChangedHP = null;    // HP가 변경되면 호출
+	int maxHP;   // 최대 HP
+	int curHP;  // 현재 HP
 	public int level;
+	int attackPower; // 공격력
+	bool IsDeath { get { return (curHP <= 0); } } // 몬스터 사망처리
 	
 	Animator myAnimator = null;
-	AnimationEventReceiver myEventReceiver = null;
+	
 
 	private void Awake()
 	{
 		myAnimator = GetComponent<Animator>();
-		myEventReceiver = GetComponent<AnimationEventReceiver>();
-		myEventReceiver.callbackAttackEvent = OnAttackEvent;
-		myEventReceiver.callbackAnimEndEvent = OnAnimEndEvent;
+		
 	}
 
 	private void Start()
@@ -54,15 +50,14 @@ public class Monster : MonoBehaviour
 	}
 
 
-	// 상태전이에 따른 코루틴을 전환하는 함수
+	// 상태전이에 따른 코루틴 전환
 	Coroutine prevCoroutine = null;
 	STATE curState = STATE.NONE;
 	void nextState(STATE newState)
 	{
 		if (IsDeath) return; // 죽으면 리턴
+		if (newState == curState) return;
 
-		if (newState == curState)
-			return;
 		// 기존 코루틴 종료
 		if (prevCoroutine != null)
 			StopCoroutine(prevCoroutine);
@@ -77,8 +72,6 @@ public class Monster : MonoBehaviour
 	{
 		myAnimator.SetBool("Move", false);
 
-		//구슬활성화시키고, 데미지 계산 다 끝나면 어택
-
 		yield return null;
 
 	}
@@ -89,10 +82,10 @@ public class Monster : MonoBehaviour
 		// 이동 애니메이션 출력
 		myAnimator.SetBool("Move", true);
 
-		transform.Translate(Vector3.forward * 5f * Time.deltaTime, Space.Self); // 플레이어 중앙이동 느리게
+		transform.Translate(Vector3.left * 5f * Time.deltaTime, Space.Self); // 몬스터 이동 느리게
 
 
-		nextState(STATE.IDLE); //중앙이동하면 다시 대기
+		nextState(STATE.IDLE); //이동하고 다시 대기
 		yield return null;
 
 	}
@@ -101,7 +94,7 @@ public class Monster : MonoBehaviour
 	IEnumerator ATTACK_State()
 	{
 		myAnimator.SetTrigger("Attack"); //공격 애니메이션 출력
-										 //계산된 어택파워로 몬스터 공격
+										 //가진 공격력으로 플레이어 공격
 
 		yield return new WaitForSeconds(2f);
 
@@ -113,8 +106,8 @@ public class Monster : MonoBehaviour
 	{
 
 		// 피격 이펙트 출력
-		GameObject instObj = Instantiate(ResDataObj.EffHit, transform.position, Quaternion.identity);
-		Destroy(instObj, 2f); // 2초 뒤에 삭제된다.
+		//GameObject instObj = Instantiate(ResDataObj.EffHit, transform.position, Quaternion.identity);
+		//Destroy(instObj, 2f); // 2초 뒤에 삭제된다.
 
 		// 피격 애니메이션 출력
 		myAnimator.SetTrigger("Damage");
@@ -124,8 +117,8 @@ public class Monster : MonoBehaviour
 		yield return null;
 	}
 
-	//
-	// 죽음 상태를 처리하는 코루틴
+	
+	// 죽음 상태
 	IEnumerator DEATH_State()
 	{
 
@@ -148,7 +141,7 @@ public class Monster : MonoBehaviour
 			CallbackChangedHP(curHP, maxHP);
 
 		// 데미지 텍스트 출력
-		DamageTextMgr.Inst.AddText(AttackPower, transform.position, Vector3.up * 1.5f);
+		//DamageTextMgr.Inst.AddText(AttackPower, transform.position, Vector3.up * 1.5f);
 
 		if (curHP <= 0)
 		{
@@ -168,17 +161,5 @@ public class Monster : MonoBehaviour
 	}
 
 
-	// 공격애니메이션 중에 공격이벤트가 발생하는 시점에 호출
-	void OnAttackEvent()
-	{
-		
-		//AttackPower = attackPower;
-
-	}
-
-	// 공격애니메이션 종료될 때 호출되는 함수
-	void OnAnimEndEvent()
-	{
-		isAttackProcess = false;
-	}
+	
 }
