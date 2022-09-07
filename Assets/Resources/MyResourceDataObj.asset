@@ -26,3 +26,4 @@ MonoBehaviour:
   - {fileID: 7349558983331179743, guid: 30060de2fd7a5114a8d1b4df53a64e58, type: 3}
   - {fileID: 989121150376260150, guid: e7efbee90bfbc134680e5ef6cd5e8668, type: 3}
   damagetext: {fileID: 1076600475862821021, guid: 55129b637f80d514292b072bf4990323, type: 3}
+  attacktext: {fileID: 109177482711909058, guid: 17486261c7d7dc04daeac7a4d5d8c307, type: 3}

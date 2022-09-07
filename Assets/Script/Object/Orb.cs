@@ -123,11 +123,11 @@ public class Orb : MonoBehaviour
 
             rigidbody.gravityScale = 0f;
             CircleCollider.enabled = false;
-            player.AttackPower = attackPower;
+            player.ReadyAttack(attackPower);
             attackPower = 0;
             OrbPool.Inst.DestroyOrb(this);
+            GameMgr.Inst.Pattack();
 
-            OrbPool.Inst.SetOrb();
         }
     }
 

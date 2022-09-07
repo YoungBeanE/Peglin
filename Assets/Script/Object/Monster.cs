@@ -31,12 +31,7 @@ public class Monster : MonoBehaviour
 		nextState(STATE.IDLE);
 	}
 
-	public void SetData(MonsterData mobData)
-	{
-		gameObject.name = mobData.Name;
-		attackPower = mobData.AttackPower;
-		maxHP = mobData.MaxHP;
-	}
+	
 	public enum STATE
 	{
 		NONE,   // 아무것도 아닌 상태
@@ -141,8 +136,8 @@ public class Monster : MonoBehaviour
 			CallbackChangedHP(curHP, maxHP);
 
 		// 데미지 텍스트 출력
-		//DamageTextMgr.Inst.AddText(AttackPower, transform.position, Vector3.up * 1.5f);
-
+		DamageTextMgr.Inst.AttackText(AttackPower, transform.position, Vector3.up * 1.5f);
+		
 		if (curHP <= 0)
 		{
 			// 보상을 준다.

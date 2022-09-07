@@ -6,26 +6,31 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour
 {
     #region 싱글턴
-    static UIManager inst = null;
+    static UIManager instance = null;
     public static UIManager Inst
     {
         get
         {
-            if (inst == null)
+            if (instance == null)
             {
-                inst = new UIManager();
+                instance = FindObjectOfType<UIManager>();
+                if (instance == null)
+                    instance = new GameObject("UIManager").AddComponent<UIManager>();
             }
-            return inst;
+            return instance;
         }
     }
     #endregion 
-    [SerializeField] Slider sliHP;
+    [SerializeField] Slider PlayerHP;
+    [SerializeField] Slider PMonHP;
+    [SerializeField] Slider SMonHP;
 
-    [SerializeField] Text txtWave;
+    [SerializeField] GameObject StartUI;
 
-	private void Awake()
+
+
+    private void Awake()
 	{
-        txtWave.gameObject.SetActive(false);
     }
 
     // Start is called before the first frame update
@@ -40,23 +45,14 @@ public class UIManager : MonoBehaviour
     {
 
     }
-    // 플레이어의 HP가 변경될 때만 호출된다.
+    public void DestroystartUI()
+    {
+        StartUI.SetActive(false);
+    }
+    // Player HP
     void onChangedHP(int curHP, int maxHP)
     {
-        sliHP.value = (float)curHP / maxHP;
+        PlayerHP.value = (float)curHP / maxHP;
     }
 
-    // 웨이브 UI 출력하는 코루틴
-    public IEnumerator processWaveUI(int waveNum)
-	{
-        // "WAVE 1" .. 
-        txtWave.text = "WAVE " + waveNum;
-        // 텍스트를 출력
-        txtWave.gameObject.SetActive(true);
-
-        // 2초 동안 보이게
-        yield return new WaitForSeconds(2f);
-        // 안보이게
-		txtWave.gameObject.SetActive(false);
-	}
 }

@@ -12,100 +12,60 @@ public class Player : MonoBehaviour
     [SerializeField] ResourceDataObj ResDataObj = null; // 리소스 데이터
 	[SerializeField] Transform transEff = null; // 이펙트가 출력될 위치
 
+	Animator myAnimator = null;
+	Orb bomborb = null;
+
 	int maxHP = 100;   // 최대 HP
 	int curHP = 0;  // 현재 HP
+	int bombnum = 0;
 	public bool IsDeath { get { return (curHP <= 0); } } // 플레이어 사망처리
 	public int Level { get; set; } = 1; // 레벨
 	public int Exp { get; set; } = 0;   // 경험치
-	public int AttackPower { get; set; } = 0; // 공격력
+	public int AttackPower { get; set; } // 공격력
 
-	//Transform transCam = null;
-	
-	Animator myAnimator = null;
-    
-
-	Orb bomborb = null;
-	int bombnum = 0;
-
+	/*
+	 * 
+	*/
 	private void Awake()
 	{
-		GameDataMgr.Inst.LoadGameData();
 		ResDataObj = Resources.Load<ResourceDataObj>("MyResourceDataObj");
 		bomborb = ResDataObj.orb[3];
 
-		//transCam  = FindObjectOfType<Camera>().transform;
 		myAnimator = GetComponent<Animator>();
     }
 
 	private void Start()
 	{
-        curHP = maxHP; // 플레이어가 생성되면 HP 를 갱신
-		nextState(STATE.IDLE);
+        curHP = maxHP; // HP
+		
 	}
 
-	
-	public enum STATE
-	{
-		NONE,   // 아무것도 아닌 상태
-		IDLE,
-		MOVE,
-		ATTACK,
-		DAMAGE,
-		DEATH,
-
-		MAX
-	}
-
-
-	// 상태전이에 따른 코루틴을 전환하는 함수
-	Coroutine prevCoroutine = null;
-	STATE curState = STATE.NONE;
-	private void nextState(STATE newState)
-	{
-		if (IsDeath) return; // 죽으면 리턴
-		if (newState == curState) return; //상태 같아도 리턴
-
-		// 기존 코루틴 종료
-		if (prevCoroutine != null)
-			StopCoroutine(prevCoroutine);
-
-		// 새로운 상태로 변경
-		curState = newState;
-		prevCoroutine = StartCoroutine(newState.ToString() + "_State");
-	}
-
-	// 대기 상태
-	IEnumerator IDLE_State()
-	{
+	void OrbCheck()
+    {
 		myAnimator.SetBool("Move", false);
-
-		//Orb생성요청
-		OrbPool.Inst.SetOrb();
-		yield return null;
+	}
+	void PlayerAttack()
+	{
+		myAnimator.SetTrigger("Attack");
+		//mobs[i].SendMessage("TransferDamge", AttackPower, SendMessageOptions.DontRequireReceiver);
 		
 	}
-
-	// 이동 상태
-	IEnumerator MOVE_State()
+	void Reward()
 	{
-		// 이동 애니메이션 출력
+
+	}
+	void Death()
+	{
+
+	}
+
+	//이동
+	IEnumerator MOVE()
+	{
 		myAnimator.SetBool("Move", true);
+		transform.Translate(Vector3.right * 5f * Time.deltaTime); // 플레이어 중앙이동  Space.Self
 
-		transform.Translate(Vector3.right * 5f * Time.deltaTime, Space.Self); // 플레이어 중앙이동 느리게
-
-		
-		nextState(STATE.IDLE); //중앙이동하면 다시 대기
-		yield return null;
-
-	}
-
-	// 공격 상태
-	IEnumerator ATTACK_State()
-	{
-		myAnimator.SetTrigger("Attack"); //공격 애니메이션 출력
-		//계산된 어택파워로 몬스터 공격
-
-		yield return new WaitForSeconds(2f);
+		yield return new WaitUntil(() => transform.position.x < 5);
 
 	}
 
@@ -122,7 +82,7 @@ public class Player : MonoBehaviour
 		myAnimator.SetTrigger("Damage");
 
 		// 만약 안죽었으면
-		nextState(STATE.IDLE);
+		
 		yield return null;
 	}
 
@@ -144,14 +104,8 @@ public class Player : MonoBehaviour
         Exp += rewardValue; // 경험치 획득
         // 획득된 경험치를 바탕으로 레벨이 올라갔다면 
         // 다른 능력치도 반영해 준다.
-        PlayerData playerData = GameDataMgr.Inst.FindPlayerDataByExp(Exp);
-        if(playerData.Level != Level)
-		{
-			//AttackPower = playerData.AttackPower;
-            maxHP = playerData.MaxHP;
-            curHP = maxHP;
-            Level = playerData.Level;
-        }
+        
+        
 	}
 
 	void TransferDamge(int AttackPower)
@@ -166,37 +120,29 @@ public class Player : MonoBehaviour
 			CallbackChangedHP(curHP, maxHP);
 
 		// 데미지 텍스트 출력
-		//DamageTextMgr.Inst.AddText(AttackPower, transform.position, Vector3.up * 1.5f);
+		DamageTextMgr.Inst.AttackText(AttackPower, transform.position, Vector3.up * 1.5f);
 
 		if (curHP <= 0)
 		{
 			curHP = 0;
-			nextState(STATE.DEATH);
+			
 		}
-		// 피격
-		else
-		{
-			nextState(STATE.DAMAGE);
-		}
+		
 
 	}
 	
+	public void ReadyAttack(int attackPower)
+    {
+		AttackPower = attackPower;
+		PlayerAttack();
+
+
+	}
 	public void GetBomb()
     {
 		bombnum++;
 		Debug.Log(bombnum);
 	}
-    // 공격이벤트가 발생하는 시점에 호출
-    void OnAttackEvent()
-	{
-		//mobs[i].SendMessage("TransferDamge", AttackPower, SendMessageOptions.DontRequireReceiver);
-	}
-
-	// 공격애니메이션 종료될 때 호출되는 함수
-	void OnAnimEndEvent()
-	{
-        //isAttackProcess = false;
-    }
 
 
 

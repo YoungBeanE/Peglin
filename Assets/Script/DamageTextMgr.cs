@@ -12,9 +12,9 @@ public class DamageTextMgr : MonoBehaviour
 		{
 			if(instance == null)
 			{
-				// 하이라키(Hiearchy)에 존재하는 것이 있는지 먼저 찾아보고
+				// Hiearchy check
 				instance = FindObjectOfType<DamageTextMgr>();
-				// 없으면 새로 다시 만들고
+				// instance
 				if(instance == null)
 					instance = new GameObject("DamageTextMgr").AddComponent<DamageTextMgr>();
 			}
@@ -24,44 +24,72 @@ public class DamageTextMgr : MonoBehaviour
 	//----------------------------------------------------------------------
 
 	[SerializeField] ResourceDataObj resourceDataObj = null;
-	[SerializeField] DamageText prefabDamageText = null; // 데미지텍스트 프리팹
-	Queue<DamageText> texts = new Queue<DamageText>();
+	[SerializeField] DamageText prefabDamageText = null; // DamageText prefab
+	[SerializeField] AttackText prefabAttackText = null; // AttackText prefab
+
+
+	Queue<DamageText> damagetexts = new Queue<DamageText>();
+	Queue<AttackText> attacktexts = new Queue<AttackText>();
+
 	Canvas canvas = null;
 	private void Awake()
 	{
 		resourceDataObj = Resources.Load<ResourceDataObj>("MyResourceDataObj");
 		prefabDamageText = resourceDataObj.damagetext;
+		prefabAttackText = resourceDataObj.attacktext;
 		canvas = FindObjectOfType<Canvas>();
 	}
 
 	
-	public void DamageText(int damageValue, Vector2 outputPos, Vector2 offsetPos)
+	public void DamageText(int damageValue, Vector2 outputPos, Vector2 offsetPos) //peg damage text  - call Orb
 	{
 		DamageText instTxt;
 		Vector3 textPos = Camera.main.WorldToScreenPoint(outputPos + offsetPos);
-		if (texts.Count == 0)
+		if (damagetexts.Count == 0)
         {
 			instTxt = Instantiate(prefabDamageText, textPos, Quaternion.identity, canvas.transform);
-			Debug.Log("확인" + damageValue);
-			
-			
-			instTxt.gameObject.SetActive(true);
 			instTxt.Damage = damageValue.ToString();
-			Debug.Log("과연" + damageValue);
+			instTxt.gameObject.SetActive(true);
 		}
         else
         {
-			instTxt = texts.Dequeue();
+			instTxt = damagetexts.Dequeue();
 			instTxt.transform.position = textPos;
 			instTxt.Damage = damageValue.ToString();
 			instTxt.gameObject.SetActive(true);
 		}
 	}
 
-    public void DestroyText(DamageText text)
+	public void AttackText(int attackValue, Vector2 outputPos, Vector2 offsetPos) //player, Monster attack text  - call Player, Monster
+	{
+		AttackText instTxt;
+		Vector3 textPos = Camera.main.WorldToScreenPoint(outputPos + offsetPos);
+		if (attacktexts.Count == 0)
+		{
+			instTxt = Instantiate(prefabAttackText, textPos, Quaternion.identity, canvas.transform);
+			instTxt.Attack = attackValue.ToString();
+			instTxt.gameObject.SetActive(true);
+		}
+		else
+		{
+			instTxt = attacktexts.Dequeue();
+			instTxt.transform.position = textPos;
+			instTxt.Attack = attackValue.ToString();
+			instTxt.gameObject.SetActive(true);
+		}
+	}
+
+	public void DestroyText(DamageText text) //peg damage text
     {
 		text.gameObject.SetActive(false);
-		texts.Enqueue(text);
+		damagetexts.Enqueue(text);
 
     }
+
+	public void DestroyAttackText(AttackText text) //Player, Monster attack text
+	{
+		text.gameObject.SetActive(false);
+		attacktexts.Enqueue(text);
+
+	}
 }

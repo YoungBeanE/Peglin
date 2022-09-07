@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class GameMgr : MonoBehaviour
 {
-	//=============================================================================
-	// 싱글턴
 	#region 싱글턴
 	static GameMgr instance = null;
     public static GameMgr Inst
@@ -14,9 +12,7 @@ public class GameMgr : MonoBehaviour
 		{
             if(instance == null)
 			{
-				// 먼저 찾아 보고
                 instance = FindObjectOfType<GameMgr>();
-				// 없다면 새로 생성
                 if (instance == null)
                     instance = new GameObject("GameMgr").AddComponent<GameMgr>();
 			}
@@ -24,46 +20,113 @@ public class GameMgr : MonoBehaviour
 		}
 	}
 	#endregion // 싱글턴
-	//=============================================================================
 
-	[SerializeField] UIManager uiManager = null;
+	Player player;
+	Monster[] monster;
+	cameramove camera;
 
+	int waveNum;
 
+	private void Awake()
+    {
+		GameDataMgr.Inst.LoadGameData(); //data lord
+		player = FindObjectOfType<Player>();
+		monster = FindObjectsOfType<Monster>();
+		camera = FindObjectOfType<cameramove>();
+	}
+	
 	// Start is called before the first frame update
 	void Start()
     {
-		StartCoroutine(processGameMgr());
+		camera.gamstart();
+		waveNum = 1;
     }
-
-
-	// 
-	// 게임 전체 로직을 관장한다.
-	IEnumerator processGameMgr()
+	public void startbutton() // 시작버튼 누르면
 	{
-		int waveNum = 1;
-		while (true)
-		{
-			// 1. UIManager 에게 웨이브 UI를 출력하도록 요청한다. (그리고 대기~)
-			Debug.Log("## Wave UI 연출 시작");
-			yield return StartCoroutine(uiManager.processWaveUI(waveNum));
+		nextState(STATE.Map);
+		UIManager.Inst.DestroystartUI();
+		
+	}
+	
+	public void main()
+    {
+		nextState(STATE.Orbcheck);
+	}
+	public void Pattack()
+	{
+		nextState(STATE.PlayerAttack);
+	}
 
-			// 2. 스폰관리자 객체들에게 현재 웨이브의 몬스터를 스폰하도록 요청 (그리고 대기~)
-			Debug.Log("## 스포너들에게 스폰 요청");
-			//SpawnArea_Ver2[] spawner = FindObjectsOfType<SpawnArea_Ver2>();
-			//foreach(SpawnArea_Ver2 spawnArea in spawner)
-			{
-				//spawnArea.Go(waveNum);
-			}
+	public enum STATE
+	{
+		None,
+		Map,   // 필드 이동
+		Orbcheck, // orb - peg damage check
+		PlayerAttack,
+		MonsterAttack,
+		Reward, //monster die
+		Death, //player die
 
+		MAX
+	}
 
-			// 몬스터 가 아직 있다면 
-			//while (MonsterListMgr.Inst.GetAllCount() > 0)
-				yield return null; // 다음 프레임까지 기다리는 것
+	Coroutine prevCoroutine = null;
+	STATE curState = STATE.None;
 
-			// 다음 웨이브
-			++waveNum;
-		}
+	private void nextState(STATE newState) // 상태전이 코루틴 전환
+	{
+		//if (IsDeath) return; // 죽으면 리턴
+		if (newState == curState) return; //상태 같아도 리턴
+
+		// 기존 코루틴 종료
+		if (prevCoroutine != null)
+			StopCoroutine(prevCoroutine);
+
+		// 새로운 상태로 변경
+		curState = newState;
+		prevCoroutine = StartCoroutine(newState.ToString() + "_State");
+	}
+	IEnumerator Map_State()
+	{
+		camera.mapmove();
+		yield return null;
+	}
+	IEnumerator Orbcheck_State()
+	{
+		camera.mainmove();
+		OrbPool.Inst.SetOrb();
+		yield return null;
+	}
+	/*
+	IEnumerator PlayerAttack_State()
+	{
+		player.
+		yield return new WaitForSeconds(1f);
+
+	}*/
+
+	IEnumerator MonsterAttack_State()
+	{
+
+		yield return new WaitForSeconds(2f);
 
 	}
 
+
+	IEnumerator Reward_State()
+	{
+
+		// 만약 안죽었으면
+		nextState(STATE.Orbcheck);
+		yield return null;
+	}
+
+	IEnumerator Death_State()
+	{
+
+		yield return null;
+
+	}
+	
+	
 }

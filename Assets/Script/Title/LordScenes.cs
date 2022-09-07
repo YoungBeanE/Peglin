@@ -5,11 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class LordScenes : MonoBehaviour
 {
-    private void Start()
-    {
-       
-    }
-
     public void onClick()
     {
         StartCoroutine(Scene());
@@ -17,7 +12,7 @@ public class LordScenes : MonoBehaviour
 
     IEnumerator Scene()
     {
-        yield return new WaitForSeconds(0.5f);
+        
         AsyncOperation a1 = SceneManager.LoadSceneAsync("Main");
         
 

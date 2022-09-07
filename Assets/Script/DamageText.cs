@@ -21,6 +21,7 @@ public class DamageText : MonoBehaviour
     void Awake()
     {
         textMeshProUGUI = GetComponent<TextMeshProUGUI>();
+        
     }
     private void OnEnable()
     {
@@ -29,15 +30,16 @@ public class DamageText : MonoBehaviour
         curcolor = new Color(250 / 255f, 250 / 255f, 10 / 255f, 250 / 255f);
         time = 0;
         textMeshProUGUI.text = (Damage);
-        Debug.Log("얼마" + Damage);
     }
 
 
     // Update is called once per frame
     void Update()
     {
-        if(textMeshProUGUI.text == Damage)
-            Debug.Log("음" + Damage);
+        if(textMeshProUGUI.text != Damage)
+        {
+            textMeshProUGUI.text = (Damage);
+        }
         // The value of the curve, at the point in time specified.
         curOffset.y = OffsetCurve.Evaluate(time);    
         // 위치 변경
