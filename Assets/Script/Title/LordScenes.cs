@@ -12,11 +12,11 @@ public class LordScenes : MonoBehaviour
 
     IEnumerator Scene()
     {
-        
-        AsyncOperation a1 = SceneManager.LoadSceneAsync("Main");
-        
-
-        yield return new WaitForSeconds(2f);
-        
+        AsyncOperation asyncOperation = SceneManager.LoadSceneAsync("Main"); //비동기 로딩 - coroutine
+        while(asyncOperation.isDone == false) //Loading...
+        {
+            Debug.Log("Progress : " + asyncOperation.progress);
+            yield return null;
+        }
     }
 }

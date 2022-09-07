@@ -42,11 +42,19 @@ public class AttackText : MonoBehaviour
         }
 
         // The value of the curve, at the point in time specified.
-        curOffset.y = OffsetCurve.Evaluate(time);
-        // 위치 변경
-        transform.position = oriPos + curOffset;
+        
+        curOffset.x = OffsetCurve.Evaluate(time);
 
-
+        if (oriPos.x < -1f)
+        {
+            transform.position = oriPos + curOffset;
+        }
+        else
+        {
+            transform.position = oriPos - curOffset;
+        }
+        
+        
         // ScaleCurve
         curScale = Vector3.one * ScaleCurve.Evaluate(time);
         // 스케일 변경

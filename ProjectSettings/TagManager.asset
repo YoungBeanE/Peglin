@@ -13,6 +13,8 @@ TagManager:
   - Orb3
   - Orb4
   - Attack
+  - Pmonster
+  - Smonster
   layers:
   - Default
   - TransparentFX

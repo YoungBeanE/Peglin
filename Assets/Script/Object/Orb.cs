@@ -24,8 +24,6 @@ public class Orb : MonoBehaviour
         Debug.Log($"{level}, {nam}, {damage}, {criDamage}, {healPower}, {attackPower}, {info}");
     }
 
-    Player player;
-
     Rigidbody2D rigidbody;
     LineRenderer line;
     CircleCollider2D CircleCollider;
@@ -34,12 +32,10 @@ public class Orb : MonoBehaviour
     Vector3 hitPos;
     Vector3 dir;
 
-    //int layerMaskPeg;
 
     // Start is called before the first frame update
     void Awake()
     {
-        player = FindObjectOfType<Player>();
         rigidbody = GetComponent<Rigidbody2D>();
         line = GetComponent<LineRenderer>();
         CircleCollider = GetComponent<CircleCollider2D>();
@@ -120,14 +116,11 @@ public class Orb : MonoBehaviour
     {
         if (collision.transform.tag == "Attack")
         {
-
             rigidbody.gravityScale = 0f;
             CircleCollider.enabled = false;
-            player.ReadyAttack(attackPower);
+            GameMgr.Inst.Playerattack(attackPower);
             attackPower = 0;
             OrbPool.Inst.DestroyOrb(this);
-            GameMgr.Inst.Pattack();
-
         }
     }
 

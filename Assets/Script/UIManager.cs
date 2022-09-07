@@ -23,22 +23,19 @@ public class UIManager : MonoBehaviour
     #endregion 
     [SerializeField] Slider PlayerHP;
     [SerializeField] Slider PMonHP;
-    [SerializeField] Slider SMonHP;
-
+    
     [SerializeField] GameObject StartUI;
+    [SerializeField] GameObject MainUI;
+    [SerializeField] GameObject monhpUI;
 
-
-
-    private void Awake()
-	{
-    }
 
     // Start is called before the first frame update
     void Start()
     {
         Player myPlayer = FindObjectOfType<Player>();
         myPlayer.CallbackChangedHP = onChangedHP;
-
+        Monster myMonster = FindObjectOfType<Monster>();
+        myMonster.CallbackChangedHP = onChangedMonHP;
     }
 
     public void SetOrbUI(List<Orb> orbs) //orb 리스트 받아와.
@@ -49,10 +46,28 @@ public class UIManager : MonoBehaviour
     {
         StartUI.SetActive(false);
     }
+    public void SetmainUI()
+    {
+        MainUI.SetActive(true);
+    }
+    public void SetmonhpUI()
+    {
+        monhpUI.SetActive(true);
+    }
+    public void DestroymainUI()
+    {
+        MainUI.SetActive(false);
+    }
     // Player HP
     void onChangedHP(int curHP, int maxHP)
     {
         PlayerHP.value = (float)curHP / maxHP;
+    }
+
+    //Monster HP
+    void onChangedMonHP(int curHP, int maxHP)
+    {
+        PMonHP.value = (float)curHP / maxHP;
     }
 
 }

@@ -15,22 +15,22 @@ public class cameramove : MonoBehaviour
     {
         transform.position = new Vector3(-20f, 1f, -10f); // start
     }
-    public void mapmove()
+    public void mapmove(int dir)
     {
         transform.position = new Vector3(30f, -5f, -10f); // map
-        StartCoroutine("map");
+        StartCoroutine(map(dir));
     }
-    IEnumerator map()
+    IEnumerator map(int dir)
     {
         while (true)
         {
             transform.Translate(Vector3.up * 35f * Time.deltaTime);
             yield return new WaitForSeconds(0.1f);
-            if(transform.position.y > 2f)
+            if (transform.position.y > 2f)
             {
                 transform.position = new Vector3(30f, 2f, -10f); // map
                 yield return new WaitForSeconds(0.5f);
-                mpeglin.Move(0);
+                mpeglin.Move(dir);
                 yield break;
             }
         }

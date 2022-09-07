@@ -5,8 +5,9 @@ using UnityEngine;
 public class Speglin : MonoBehaviour
 {
     Vector2 startpos;
-    Vector2 move;
     Vector2 endpos;
+    Vector2 move;
+    
     // Start is called before the first frame update
     void Start()
     {

@@ -22,111 +22,67 @@ public class GameMgr : MonoBehaviour
 	#endregion // 싱글턴
 
 	Player player;
-	Monster[] monster;
+	Monster monster;
 	cameramove camera;
 
-	int waveNum;
-
-	private void Awake()
+	int directionnum; //0 - down 1-right 2-left
+	void Awake()
     {
-		GameDataMgr.Inst.LoadGameData(); //data lord
+		GameDataMgr.Inst.LoadGameData(); //orbdata lord
 		player = FindObjectOfType<Player>();
-		monster = FindObjectsOfType<Monster>();
+		monster = FindObjectOfType<Monster>();
 		camera = FindObjectOfType<cameramove>();
+
 	}
 	
 	// Start is called before the first frame update
 	void Start()
     {
+		UIManager.Inst.DestroymainUI();
 		camera.gamstart();
-		waveNum = 1;
-    }
-	public void startbutton() // 시작버튼 누르면
+		directionnum = 0;
+	}
+	public void startbutton() // 시작버튼 누르면 호출
 	{
-		nextState(STATE.Map);
+		camera.mapmove(directionnum);
 		UIManager.Inst.DestroystartUI();
-		
 	}
-	
-	public void main()
+	public void main() //mpeglin moved
     {
-		nextState(STATE.Orbcheck);
-	}
-	public void Pattack()
-	{
-		nextState(STATE.PlayerAttack);
-	}
-
-	public enum STATE
-	{
-		None,
-		Map,   // 필드 이동
-		Orbcheck, // orb - peg damage check
-		PlayerAttack,
-		MonsterAttack,
-		Reward, //monster die
-		Death, //player die
-
-		MAX
-	}
-
-	Coroutine prevCoroutine = null;
-	STATE curState = STATE.None;
-
-	private void nextState(STATE newState) // 상태전이 코루틴 전환
-	{
-		//if (IsDeath) return; // 죽으면 리턴
-		if (newState == curState) return; //상태 같아도 리턴
-
-		// 기존 코루틴 종료
-		if (prevCoroutine != null)
-			StopCoroutine(prevCoroutine);
-
-		// 새로운 상태로 변경
-		curState = newState;
-		prevCoroutine = StartCoroutine(newState.ToString() + "_State");
-	}
-	IEnumerator Map_State()
-	{
-		camera.mapmove();
-		yield return null;
-	}
-	IEnumerator Orbcheck_State()
-	{
 		camera.mainmove();
+		UIManager.Inst.SetmonhpUI();
+		UIManager.Inst.SetmainUI();
 		OrbPool.Inst.SetOrb();
-		yield return null;
 	}
-	/*
-	IEnumerator PlayerAttack_State()
+	public void Playerattack(int AttackPower) //orb damage checked (orb ->player)
 	{
-		player.
-		yield return new WaitForSeconds(1f);
-
-	}*/
-
-	IEnumerator MonsterAttack_State()
-	{
-
-		yield return new WaitForSeconds(2f);
-
+		player.AttackGo(AttackPower);
 	}
-
-
-	IEnumerator Reward_State()
+	public void Monsterattack() //player attacked (player ->monster)
 	{
-
-		// 만약 안죽었으면
-		nextState(STATE.Orbcheck);
-		yield return null;
+		monster.MonsterGo();
 	}
-
-	IEnumerator Death_State()
+	public void Playerdamage(int AttackPower) //(mon ->player)
 	{
-
-		yield return null;
-
+		player.Damage(AttackPower);
+		if (player.IsDeath == false)
+		{
+			OrbPool.Inst.SetOrb();
+		}
+	}
+	public void Monsterdamage(int attackpower) //player attacked (player ->monster)
+	{
+		monster.Damage(attackpower);
+	}
+	public void MonsterDie() 
+	{
+		player.Mapmove();
 	}
 	
+	public void Direction(int dir) //peglin move dir check
+	{
+		directionnum = dir;
+		camera.mapmove(directionnum);
+	}
 	
 }

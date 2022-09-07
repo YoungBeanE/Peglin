@@ -13,7 +13,6 @@ public class Mpeglin : MonoBehaviour
     {
         transform.position = start;
     }
-
     public void Move(int dir)
     {
         switch (dir)
@@ -51,7 +50,7 @@ public class Mpeglin : MonoBehaviour
         {
             transform.Translate(movement * 15f * Time.deltaTime);
             yield return new WaitForSeconds(0.1f);
-            if (transform.position.y <= 0.1f)
+            if (transform.position.y <= 0.2f)
             {
                 yield return new WaitForSeconds(0.2f);
                 GameMgr.Inst.main();
@@ -69,7 +68,7 @@ public class Mpeglin : MonoBehaviour
             {
                 transform.Translate(movement * 15f * Time.deltaTime);
                 yield return new WaitForSeconds(0.1f);
-                if (transform.position.y <= 0.1f)
+                if (transform.position.y <= 0.2f)
                 {
                     yield return new WaitForSeconds(0.2f);
                     GameMgr.Inst.main();
