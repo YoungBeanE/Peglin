@@ -61,25 +61,43 @@ public class Monster : MonoBehaviour
 	public void Damage(int AttackPower)
 	{
 		if (IsDeath) return;
-		damnum++;
+		
 		myAnimator.SetTrigger("Damage");
 		curHP -= AttackPower;
 		if (CallbackChangedHP != null)
 			CallbackChangedHP(curHP, maxHP);
+
 		if (curHP <= 0)
 		{
 			curHP = 0;
 			myAnimator.SetTrigger("Die");
 			GameMgr.Inst.MonsterDie();
 		}
-		if(damnum >= 2)
+        else
         {
 			GameMgr.Inst.Monsterattack();
-			damnum = 0;
 		}
 		
+		
+	}
+	public void BDamage(int AttackPower)
+	{
+		if (IsDeath) return;
+		myAnimator.SetTrigger("Damage");
+		curHP -= AttackPower;
+		if (CallbackChangedHP != null)
+			CallbackChangedHP(curHP, maxHP);
+
+		if (curHP <= 0)
+		{
+			curHP = 0;
+			myAnimator.SetTrigger("Die");
+			GameMgr.Inst.MonsterDie();
+		}
+		
+
 	}
 
 
-	
+
 }

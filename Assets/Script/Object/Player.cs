@@ -59,12 +59,29 @@ public class Player : MonoBehaviour
 			myAnimator.SetTrigger("Die");
 		}
 	}
+	public void AttackBomb(int attackPower)
+	{
+		if (bombnum == 0)
+		{
+			AttackGo(attackPower);
+		}
+        else
+        {
+			myAnimator.SetTrigger("Attack");
+			for (int i = 0; i < bombnum; i++)
+			{
+				GameObject instB = Instantiate(bomborb, transform.position, Quaternion.identity);
+			}
+			bombnum = 0;
+		}
+		
+	
+	}
 	public void AttackGo(int attackPower)
     {
-		bomb();
 		myAnimator.SetTrigger("Attack");
 		AttackPower = attackPower;
-		DamageTextMgr.Inst.AttackText(AttackPower, transform.position, Vector3.right);
+		DamageTextMgr.Inst.AttackText(AttackPower, transform.position, (Vector3.right)/2);
 		GameMgr.Inst.Monsterdamage(AttackPower);
 		
 	}
@@ -72,14 +89,6 @@ public class Player : MonoBehaviour
     {
 		bombnum++;
 	}
-	void bomb()
-    {
-		myAnimator.SetTrigger("Attack");
-		for (int i = 0; i < bombnum; i++)
-		{
-			GameObject instB = Instantiate(bomborb, transform.position, Quaternion.identity);
-		}
-	}
-
+	
 
 }

@@ -54,9 +54,20 @@ public class GameMgr : MonoBehaviour
 		UIManager.Inst.SetmainUI();
 		OrbPool.Inst.SetOrb();
 	}
+	int count = 0;
 	public void Playerattack(int AttackPower) //orb damage checked (orb ->player)
 	{
-		player.AttackGo(AttackPower);
+		if(count == 0)
+        {
+			player.AttackBomb(AttackPower);
+			count++;
+		}
+		if (count != 0)
+		{
+			player.AttackGo(AttackPower);
+			count = 0;
+		}
+
 	}
 	public void Monsterattack() //player attacked (player ->monster)
 	{
@@ -73,6 +84,10 @@ public class GameMgr : MonoBehaviour
 	public void Monsterdamage(int attackpower) //player attacked (player ->monster)
 	{
 		monster.Damage(attackpower);
+	}
+	public void MonsterBdamage(int attackpower) //player attacked (player ->monster)
+	{
+		monster.BDamage(attackpower);
 	}
 	public void MonsterDie() 
 	{

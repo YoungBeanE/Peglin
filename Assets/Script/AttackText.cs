@@ -45,7 +45,7 @@ public class AttackText : MonoBehaviour
         
         curOffset.x = OffsetCurve.Evaluate(time);
 
-        if (oriPos.x < -1f)
+        if (oriPos.x < 1f)
         {
             transform.position = oriPos + curOffset;
         }
