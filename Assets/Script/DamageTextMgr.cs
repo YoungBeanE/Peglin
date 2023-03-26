@@ -38,18 +38,30 @@ public class DamageTextMgr : MonoBehaviour
 		prefabDamageText = resourceDataObj.damagetext;
 		prefabAttackText = resourceDataObj.attacktext;
 		canvas = FindObjectOfType<Canvas>();
+
+		for(int i = 0; i < 5; i++)
+        {
+			DamageText instTxt = Instantiate(prefabDamageText, Vector3.zero, Quaternion.identity, canvas.transform);
+			instTxt.gameObject.SetActive(false);
+			damagetexts.Enqueue(instTxt);
+		}
+
+		AttackText attackTxt = Instantiate(prefabAttackText, Vector3.zero, Quaternion.identity, canvas.transform);
+		attackTxt.gameObject.SetActive(false);
+		attacktexts.Enqueue(attackTxt);
 	}
 
 	
 	public void DamageText(int damageValue, Vector2 outputPos, Vector2 offsetPos) //peg damage text  - call Orb
 	{
 		DamageText instTxt;
-		Vector3 textPos = Camera.main.WorldToScreenPoint(outputPos + offsetPos);
+		//Vector3 textPos = Camera.main.WorldToScreenPoint(outputPos + offsetPos);
+		Vector3 textPos = outputPos + offsetPos;
 		if (damagetexts.Count == 0)
         {
 			instTxt = Instantiate(prefabDamageText, textPos, Quaternion.identity, canvas.transform);
 			instTxt.Damage = damageValue.ToString();
-			instTxt.gameObject.SetActive(true);
+			//instTxt.gameObject.SetActive(true);
 		}
         else
         {
@@ -63,12 +75,13 @@ public class DamageTextMgr : MonoBehaviour
 	public void AttackText(int attackValue, Vector2 outputPos, Vector2 offsetPos) //player, Monster attack text  - call Player, Monster
 	{
 		AttackText instTxt;
-		Vector3 textPos = Camera.main.WorldToScreenPoint(outputPos + offsetPos);
+		//Vector3 textPos = Camera.main.WorldToScreenPoint(outputPos + offsetPos);
+		Vector3 textPos = outputPos + offsetPos;
 		if (attacktexts.Count == 0)
 		{
 			instTxt = Instantiate(prefabAttackText, textPos, Quaternion.identity, canvas.transform);
 			instTxt.Attack = attackValue.ToString();
-			instTxt.gameObject.SetActive(true);
+			//instTxt.gameObject.SetActive(true);
 		}
 		else
 		{
@@ -90,6 +103,5 @@ public class DamageTextMgr : MonoBehaviour
 	{
 		text.gameObject.SetActive(false);
 		attacktexts.Enqueue(text);
-
 	}
 }

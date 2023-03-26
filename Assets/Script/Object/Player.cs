@@ -31,17 +31,19 @@ public class Player : MonoBehaviour
         curHP = maxHP; // HP
 		myAnimator.SetBool("Move", false);
 	}
-	IEnumerator MOVE()
+	IEnumerator Move()
 	{
 		myAnimator.SetBool("Move", true);
-		transform.Translate(Vector3.right * 5f * Time.deltaTime); // 플레이어 중앙이동  Space.Self
-
-		yield return new WaitUntil(() => transform.position.x > 0f);
+        while (transform.position.x < 0f)
+        {
+			transform.Translate(Vector3.right * 5f * Time.deltaTime);
+			yield return null;
+		}
 		GameMgr.Inst.Direction(1);
 	}
 	public void Mapmove()
     {
-		StartCoroutine("MOVE");
+		StartCoroutine(nameof(Move));
     }
 
 	public void Damage(int AttackPower)
@@ -57,9 +59,11 @@ public class Player : MonoBehaviour
 		{
 			curHP = 0;
 			myAnimator.SetTrigger("Die");
+			UIManager.Inst.GameOver(false);
 		}
 	}
-	public void AttackBomb(int attackPower)
+
+	public void Attack(int attackPower)
 	{
 		if (bombnum == 0)
 		{
@@ -70,9 +74,10 @@ public class Player : MonoBehaviour
 			myAnimator.SetTrigger("Attack");
 			for (int i = 0; i < bombnum; i++)
 			{
-				GameObject instB = Instantiate(bomborb, transform.position, Quaternion.identity);
+				Instantiate(bomborb, transform.position, Quaternion.identity);
 			}
 			bombnum = 0;
+			AttackGo(attackPower);
 		}
 		
 	
@@ -81,10 +86,10 @@ public class Player : MonoBehaviour
     {
 		myAnimator.SetTrigger("Attack");
 		AttackPower = attackPower;
-		DamageTextMgr.Inst.AttackText(AttackPower, transform.position, (Vector3.right)/2);
+		DamageTextMgr.Inst.AttackText(AttackPower, transform.position, Vector3.right * 0.1f);
 		GameMgr.Inst.Monsterdamage(AttackPower);
-		
 	}
+
 	public void GetBomb()
     {
 		bombnum++;

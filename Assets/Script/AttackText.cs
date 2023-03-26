@@ -5,14 +5,13 @@ using TMPro;
 
 public class AttackText : MonoBehaviour
 {
-    [SerializeField] AnimationCurve OffsetCurve = new AnimationCurve(new Keyframe[] { new Keyframe(0f, 0f), new Keyframe(1f, 40f) });
+    [SerializeField] AnimationCurve OffsetCurve = new AnimationCurve(new Keyframe[] { new Keyframe(0f, 0f), new Keyframe(1f, 2f) });
     [SerializeField] AnimationCurve ScaleCurve = new AnimationCurve(new Keyframe[] { new Keyframe(0f, 0f), new Keyframe(1f, 1f) });
     [SerializeField] TextMeshProUGUI textMeshProUGUI = null;
 
 
     Vector3 oriPos = Vector3.zero;
-    Vector3 oriScale = Vector3.one;
-    Vector3 curOffset = Vector3.zero;
+    Vector3 curPos = Vector3.zero;
     Vector3 curScale = Vector3.one;
     
 
@@ -21,55 +20,39 @@ public class AttackText : MonoBehaviour
     public string Attack { get; set; }
     void Awake()
     {
-        textMeshProUGUI = GetComponent<TextMeshProUGUI>();
-
+        if(textMeshProUGUI == null) textMeshProUGUI = GetComponent<TextMeshProUGUI>();
     }
     private void OnEnable()
     {
         oriPos = transform.position;    // 시작 위치 기록
-        oriScale = transform.localScale;
         time = 0;
         textMeshProUGUI.text = Attack;
+        StartCoroutine(ShowAttackText());
     }
 
-
-    // Update is called once per frame
-    void Update()
+    IEnumerator ShowAttackText()
     {
-        if (textMeshProUGUI.text != Attack)
+        if (textMeshProUGUI.text != Attack) textMeshProUGUI.text = Attack;
+
+        while (time < OffsetCurve.keys[OffsetCurve.keys.Length - 1].time)
         {
-            textMeshProUGUI.text = Attack;
+            // The value of the curve, at the point in time specified.
+            curPos.x = OffsetCurve.Evaluate(time);
+            // Pos 변경
+            if (oriPos.x < 0f) transform.position = oriPos + curPos;
+            else transform.position = oriPos - curPos;
+
+            // ScaleCurve
+            curScale = Vector3.one * ScaleCurve.Evaluate(time);
+            // scale 변경
+            transform.localScale = curScale;
+
+            // 시간 누적
+            time += Time.deltaTime;
+            yield return null;
         }
 
-        // The value of the curve, at the point in time specified.
-        
-        curOffset.x = OffsetCurve.Evaluate(time);
-
-        if (oriPos.x < 1f)
-        {
-            transform.position = oriPos + curOffset;
-        }
-        else
-        {
-            transform.position = oriPos - curOffset;
-        }
-        
-        
-        // ScaleCurve
-        curScale = Vector3.one * ScaleCurve.Evaluate(time);
-        // 스케일 변경
-        transform.localScale = curScale;
-
-
-        // 시간 누적
-        time += Time.deltaTime;
-
-        // AnimationCurve 마지막 시간
-        if (OffsetCurve.keys[OffsetCurve.keys.Length - 1].time <= time)
-        {
-            // 비활성화
-            DamageTextMgr.Inst.DestroyAttackText(this);
-        }
+        DamageTextMgr.Inst.DestroyAttackText(this);
     }
     
 }

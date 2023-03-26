@@ -8,6 +8,7 @@ public class Monster : MonoBehaviour
 	public OnChangedMonHP CallbackChangedHP = null;    // HP가 변경되면 호출
 
 	[SerializeField] ResourceDataObj ResDataObj = null; // 리소스 데이터
+	[SerializeField] GameObject hp = null;
 
 	int level;
 	int maxHP;  // 최대 HP
@@ -24,21 +25,27 @@ public class Monster : MonoBehaviour
 		myAnimator = GetComponent<Animator>();
 	}
 
-	private void Start()
-	{
+	public void SetUI(bool active)
+    {
+		hp.SetActive(active);
+	}
+
+    private void OnEnable()
+    {
 		level = 1;
 		maxHP = 100;
 		curHP = 100;
 		attackPower = 10;
-		
+
 		myAnimator.SetBool("Move", false);
 	}
+    
 	public void MonsterGo()
     {
-		StartCoroutine("MOVE");
+		StartCoroutine(nameof(MoveMob));
     }
 
-	IEnumerator MOVE()
+	IEnumerator MoveMob()
 	{
 		myAnimator.SetBool("Move", true);
 		int move = 0;
@@ -51,7 +58,7 @@ public class Monster : MonoBehaviour
 			if(move > 10)
             {
 				myAnimator.SetTrigger("Attack");
-				DamageTextMgr.Inst.AttackText(attackPower, transform.position, Vector3.left);
+				DamageTextMgr.Inst.AttackText(attackPower, transform.position, Vector3.left * 0.1f);
 				GameMgr.Inst.Playerdamage(attackPower);
 				yield break;
 			}
@@ -72,14 +79,14 @@ public class Monster : MonoBehaviour
 			curHP = 0;
 			myAnimator.SetTrigger("Die");
 			GameMgr.Inst.MonsterDie();
+			this.gameObject.SetActive(false);
 		}
         else
         {
-			GameMgr.Inst.Monsterattack();
+			MonsterGo();
 		}
-		
-		
 	}
+
 	public void BDamage(int AttackPower)
 	{
 		if (IsDeath) return;
@@ -93,9 +100,8 @@ public class Monster : MonoBehaviour
 			curHP = 0;
 			myAnimator.SetTrigger("Die");
 			GameMgr.Inst.MonsterDie();
+			this.gameObject.SetActive(false);
 		}
-		
-
 	}
 
 

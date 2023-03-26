@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class UIManager : MonoBehaviour
 {
@@ -21,12 +22,14 @@ public class UIManager : MonoBehaviour
         }
     }
     #endregion 
+
     [SerializeField] Slider PlayerHP;
     [SerializeField] Slider PMonHP;
-    
+
+    [SerializeField] TextMeshProUGUI gameOver;
+
     [SerializeField] GameObject StartUI;
     [SerializeField] GameObject MainUI;
-    [SerializeField] GameObject monhpUI;
 
 
     // Start is called before the first frame update
@@ -36,6 +39,7 @@ public class UIManager : MonoBehaviour
         myPlayer.CallbackChangedHP = onChangedHP;
         Monster myMonster = FindObjectOfType<Monster>();
         myMonster.CallbackChangedHP = onChangedMonHP;
+        gameOver.gameObject.SetActive(false);
     }
 
     public void SetOrbUI(List<Orb> orbs) //orb 리스트 받아와.
@@ -50,10 +54,7 @@ public class UIManager : MonoBehaviour
     {
         MainUI.SetActive(true);
     }
-    public void SetmonhpUI()
-    {
-        monhpUI.SetActive(true);
-    }
+
     public void DestroymainUI()
     {
         MainUI.SetActive(false);
@@ -70,4 +71,11 @@ public class UIManager : MonoBehaviour
         PMonHP.value = (float)curHP / maxHP;
     }
 
+    public void GameOver(bool win)
+    {
+        gameOver.gameObject.SetActive(true);
+
+        if (win == false) gameOver.text = "You Lose";
+        else gameOver.text = "You Win";
+    }
 }

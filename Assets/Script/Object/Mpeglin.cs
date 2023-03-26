@@ -4,78 +4,48 @@ using UnityEngine;
 
 public class Mpeglin : MonoBehaviour
 {
-    Vector2 start = new Vector2(30f, 3.5f);
-    Vector2 stage1 = new Vector2(30f, 2f); //main
-    Vector2 stage2 = new Vector2(32f, 0f); //right
-    Vector2 stage3 = new Vector2(28f, 0f); //left
-    // Start is called before the first frame update
-    void Start()
+    Vector2 myPos = new Vector2(30f, 4f);
+    Vector2 dir = new Vector2(0, -1);
+
+    WaitForSeconds pause = new WaitForSeconds(0.1f);
+
+    // myPos is called before the first frame update
+    private void Start()
     {
-        transform.position = start;
+        this.transform.position = myPos;
     }
-    public void Move(int dir)
+
+    public void Move(int stagedir)
     {
-        switch (dir)
+        switch (stagedir)
         {
             case 0: //down
-                StartCoroutine("down");
+                dir.x = 0;
                 break;
             case 1: //right
-                StartCoroutine("right");
+                dir.x = 1;
                 break;
             case 2: //left
-                StartCoroutine("left");
+                dir.x = -1;
                 break;
         }
-    }
-    IEnumerator down()
-    {
-        while (true)
-        {
-            transform.Translate(Vector2.down * 15f * Time.deltaTime);
-            yield return new WaitForSeconds(0.1f);
-            if(transform.position.y <= 2.3f)
-            {
-                yield return new WaitForSeconds(0.2f);
-                GameMgr.Inst.main();
-                yield break;
-            }
-        }
-        
-    }
-    IEnumerator right()
-    {
-        Vector2 movement = (stage2 - stage1).normalized;
-        while (true)
-        {
-            transform.Translate(movement * 15f * Time.deltaTime);
-            yield return new WaitForSeconds(0.1f);
-            if (transform.position.y <= 0.2f)
-            {
-                yield return new WaitForSeconds(0.2f);
-                GameMgr.Inst.main();
-                yield break;
-            }
-        }
 
+        StartCoroutine(MoveStage());
     }
-    IEnumerator left()
-    {
-        while (true)
-        {
-            Vector2 movement = (stage3 - stage1).normalized;
-            while (true)
-            {
-                transform.Translate(movement * 15f * Time.deltaTime);
-                yield return new WaitForSeconds(0.1f);
-                if (transform.position.y <= 0.2f)
-                {
-                    yield return new WaitForSeconds(0.2f);
-                    GameMgr.Inst.main();
-                    yield break;
-                }
-            }
-        }
 
+    IEnumerator MoveStage()
+    {
+        while (myPos.y - this.transform.position.y < 2f)
+        {
+            transform.Translate(dir * 15f * Time.deltaTime);
+            yield return pause;
+        }
+        myPos.x += 2 * dir.x;
+        myPos.y -= 2;
+        this.transform.position = myPos;
+
+        yield return pause;
+        yield return pause;
+        GameMgr.Inst.StageStart();
     }
 }

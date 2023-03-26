@@ -48,7 +48,7 @@ public class OrbPool : MonoBehaviour
 			Orb instOrb = null;
 			int R = Random.Range(0, 2); // 일반, 크리 중에 랜덤으로 생성.
 			instOrb = Instantiate<Orb>(prefaborb[R], Orbpos, Quaternion.identity, this.transform);
-			instOrb.SetData(GameDataMgr.Inst.FindOrbDataBy(R + 1));
+			instOrb.SetData(GameMgr.Inst.FindOrbDataBy(R + 1));
 			instOrb.gameObject.SetActive(false);
 			Orbpool.Add(instOrb);
 		}
@@ -58,14 +58,16 @@ public class OrbPool : MonoBehaviour
 	{
 		Orbpool[shootOrb].transform.position = Orbpos;
 		Orbpool[shootOrb].gameObject.SetActive(true);
-		
+
+		yield return null;
+
 		shootOrb++;
 		if(shootOrb >= ResDataObj.PlayerOrb)
         {
 			UIManager.Inst.SetOrbUI(ShuffleList(Orbpool)); // List 다시세팅해서 UI에 넘겨
 			shootOrb = 0;
 		}
-		yield break;
+		
 	}
 
 	public void SetOrb() //플레이어 대기 상태에 세팅요청

@@ -11,21 +11,20 @@ public class Peg : MonoBehaviour
     
     SpriteRenderer spriteRenderer = null;
     Player player = null;
+    Sprite nomalBomb = null;
+    Sprite readyBomb = null;
 
     int collisioncount = 0;
-    private void Awake()
-    {
-        if (transform.tag == "BomPeg")
-        {
-            spriteRenderer = GetComponent<SpriteRenderer>();
-            player = FindObjectOfType<Player>();
-        }
-    }
+
     private void OnEnable()
     {
         if (transform.tag == "BomPeg")
         {
-            spriteRenderer.sprite = Resources.Load<Sprite>("Hit bomb 3");
+            if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
+            if (player == null) player = FindObjectOfType<Player>();
+            if (nomalBomb == null) nomalBomb = Resources.Load<Sprite>("Hit bomb 3");
+            if (readyBomb == null) readyBomb = Resources.Load<Sprite>("Hit bomb 0");
+            spriteRenderer.sprite = nomalBomb;
         }
     }
     
@@ -40,19 +39,16 @@ public class Peg : MonoBehaviour
                 break;
             case "BomPeg":
                 collisioncount++;
-                spriteRenderer.sprite = Resources.Load<Sprite>("Hit bomb 0");
+                spriteRenderer.sprite = readyBomb;
                 if (collisioncount >= 2) //폭탄은 두번 충돌하면 사라짐.
                 {
-                    player.GetBomb(); //플레이어한테
-                    if (callbackDestroy != null)
-                        callbackDestroy(this);
+                    player.GetBomb();
+                    if (callbackDestroy != null) callbackDestroy(this);
                 }
                 break;
             case "RefPeg":
-                if (callbackReflesh != null)
-                    callbackReflesh();
-                if (callbackDestroy != null)
-                    callbackDestroy(this);
+                if (callbackReflesh != null) callbackReflesh();
+                if (callbackDestroy != null) callbackDestroy(this);
                 break;
         }
         

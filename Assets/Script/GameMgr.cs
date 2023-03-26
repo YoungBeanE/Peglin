@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameMgr : MonoBehaviour
+public class GameMgr : GameDataMgr
 {
-	#region 싱글턴
-	static GameMgr instance = null;
+	#region Singleton
+	private static GameMgr instance = null;
     public static GameMgr Inst
 	{
 		get
@@ -19,64 +19,58 @@ public class GameMgr : MonoBehaviour
             return instance;
 		}
 	}
-	#endregion // 싱글턴
+	#endregion
 
-	Player player;
-	Monster monster;
-	cameramove camera;
+	[SerializeField] Player player;
+	[SerializeField] Monster monster;
+	[SerializeField] cameramove cam;
+	[SerializeField] Speglin speglin;
 
 	int directionnum; //0 - down 1-right 2-left
+
 	void Awake()
     {
-		GameDataMgr.Inst.LoadGameData(); //orbdata lord
-		player = FindObjectOfType<Player>();
-		monster = FindObjectOfType<Monster>();
-		camera = FindObjectOfType<cameramove>();
-
+		instance = this;
+		LoadGameData(); //Load orbdata
 	}
 	
 	// Start is called before the first frame update
 	void Start()
     {
 		UIManager.Inst.DestroymainUI();
-		camera.gamstart();
+		monster.SetUI(false);
 		directionnum = 0;
 	}
 	public void startbutton() // 시작버튼 누르면 호출
 	{
-		camera.mapmove(directionnum);
+		speglin.gameObject.SetActive(false);
+		cam.MoveMap(directionnum);
 		UIManager.Inst.DestroystartUI();
 	}
-	public void main() //mpeglin moved
-    {
-		camera.mainmove();
-		UIManager.Inst.SetmonhpUI();
-		UIManager.Inst.SetmainUI();
-		OrbPool.Inst.SetOrb();
-	}
-	int count = 0;
-	public void Playerattack(int AttackPower) //orb damage checked (orb ->player)
-	{
-		if(count == 0)
-        {
-			player.AttackBomb(AttackPower);
-			count++;
-		}
-		if (count != 0)
-		{
-			player.AttackGo(AttackPower);
-			count = 0;
-		}
 
+	public void StageStart() //mpeglin moved
+    {
+		if(monster.IsDeath) UIManager.Inst.GameOver(true);
+        else
+        {
+			cam.MoveMain();
+			UIManager.Inst.SetmainUI();
+			monster.SetUI(true);
+			OrbPool.Inst.SetOrb();
+		}
+		
+		
 	}
-	public void Monsterattack() //player attacked (player ->monster)
+
+	public void Playerattack(int AttackPower)
 	{
-		monster.MonsterGo();
+		player.Attack(AttackPower);
 	}
+
 	public void Playerdamage(int AttackPower) //(mon ->player)
 	{
 		player.Damage(AttackPower);
-		if (player.IsDeath == false)
+		if (player.IsDeath == false && monster.IsDeath == false)
 		{
 			OrbPool.Inst.SetOrb();
 		}
@@ -91,13 +85,14 @@ public class GameMgr : MonoBehaviour
 	}
 	public void MonsterDie() 
 	{
+		Debug.Log("몬스터 죽음");
 		player.Mapmove();
 	}
-	
 	public void Direction(int dir) //peglin move dir check
 	{
+		UIManager.Inst.DestroymainUI();
 		directionnum = dir;
-		camera.mapmove(directionnum);
+		cam.MoveMap(directionnum);
 	}
 	
 }

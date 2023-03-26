@@ -20,19 +20,15 @@ public class Bomb : MonoBehaviour
     private void Start()
     {
         StartCoroutine("Orb");
+        Destroy(this.gameObject, 1.5f);
     }
     IEnumerator Orb()
     {
-        while (true)
-        {
-            dir = new Vector2(Random.Range(0.1f, 4f), Random.Range(-0.2f, -1f)); // set random direction
-            rigidbody.velocity = dir;
-            rigidbody.gravityScale = 0.1f;
-            yield return new WaitForSeconds(0.02f);
-            GameObject eff = Instantiate(bombEff, transform.position, Quaternion.identity);
-            GameMgr.Inst.MonsterBdamage(bombpower);
-            Destroy(this);
-        }
-
+        dir = new Vector2(Random.Range(0.5f, 2f), Random.Range(-0.3f, -0.5f)); // set random direction
+        rigidbody.velocity = dir;
+        rigidbody.gravityScale = 0.1f;
+        yield return new WaitForSeconds(1f);
+        GameObject eff = Instantiate(bombEff, transform.position, Quaternion.identity);
+        GameMgr.Inst.MonsterBdamage(bombpower);
     }
 }

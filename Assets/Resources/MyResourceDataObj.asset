@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: MyResourceDataObj
   m_EditorClassIdentifier: 
   PlayerOrb: 5
-  EffHit: {fileID: 6213619859274339249, guid: a91e28b1b0a4d894b807f161a6177b65, type: 3}
+  EffHit: {fileID: 1076600475862821023, guid: 55129b637f80d514292b072bf4990323, type: 3}
   BombEff: {fileID: 2917008665947417400, guid: 90d12d4730730fe47962508e91d541de, type: 3}
   Bomb: {fileID: 741944677015359325, guid: 709a50f106faff9489bf523bf8c4ebaa, type: 3}
   orb:

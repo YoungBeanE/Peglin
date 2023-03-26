@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,35 +12,17 @@ public struct OrbData
 	public string Info;
 }
 
-// 게임데이터를 로드, 검색
-public class GameDataMgr
+public class GameDataMgr : MonoBehaviour
 {
-	// 싱글턴
-	#region 싱글턴
-	static GameDataMgr inst = null;
-	private GameDataMgr() { }
-	public static GameDataMgr Inst
-	{
-		get
-		{
-			if (inst == null)
-			{
-				inst = new GameDataMgr();
-			}
-			return inst;
-		}
-	}
-	#endregion //
+	List<OrbData> listOrbData = null;
 
-	List<OrbData> listOrbData = new List<OrbData>();
-
-	// 게임데이터 로드
-	public void LoadGameData() //플레이어 awake에서 호출
+	protected void LoadGameData()
 	{
+		listOrbData = new List<OrbData>();
 		loadOrbData();
 	}
 
-	// orb 데이터
+	// orb Data Parsing
 	void loadOrbData()
 	{
 		TextAsset ta = Resources.Load<TextAsset>("OrbData");
@@ -62,16 +43,11 @@ public class GameDataMgr
 			orbData.Info = columes[6];  // orb정보
 			listOrbData.Add(orbData);
 		}
-
 	}
 
 	public OrbData FindOrbDataBy(int level)
 	{
-		//public delegate bool Predicate<in T(비교할 개체 형식)>(T형식 매개변수) - 조건충족하면 true -> true인 OrbData를 찾음
-		OrbData orbData = listOrbData.Find(oData => oData.Level == level);
-		return orbData;
+		return listOrbData.Find(oData => oData.Level == level);
 	}
-
-
 }
 	
